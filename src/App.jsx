@@ -628,7 +628,38 @@ const EvidenciaSection = () => {
               <p className="font-azeret text-[9px] md:text-[10px] text-[#8C8378] mt-1 uppercase">Sr. Content Specialist</p>
             </div>
           </motion.div>
+
+          {/* Testimoniales Extra */}
+          <motion.div 
+            initial={{ opacity: 0.3, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6 }}
+            className="glass-panel neumorphism-dark p-6 rounded-[16px] md:col-span-4 border-[#FFF3C2]/5"
+          >
+            <p className="text-[12px] md:text-[13px] italic text-[#E8DDB0] mb-4 leading-relaxed">"Brandon es un sólido profesional con alto sentido de compromiso; siempre plantea soluciones con visión estratégica."</p>
+            <p className="font-outfit text-[11px] md:text-[12px] font-medium text-[#F5F1EB]">Karla Azucena</p>
+            <p className="font-azeret text-[8px] md:text-[9px] text-[#8C8378] mt-1 uppercase">Diseñadora Digital</p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0.3, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.1 }}
+            className="glass-panel neumorphism-dark p-6 rounded-[16px] md:col-span-4 border-[#FFF3C2]/5"
+          >
+            <p className="text-[12px] md:text-[13px] italic text-[#E8DDB0] mb-4 leading-relaxed">"Profesional altamente capacitado en marketing cloud, experto en automatizaciones. Es un gusto trabajar día a día con él."</p>
+            <p className="font-outfit text-[11px] md:text-[12px] font-medium text-[#F5F1EB]">Estefanía Fajardo</p>
+            <p className="font-azeret text-[8px] md:text-[9px] text-[#8C8378] mt-1 uppercase">Segment Marketing</p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0.3, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false }} transition={{ duration: 0.6, delay: 0.2 }}
+            className="glass-panel neumorphism-dark p-6 rounded-[16px] md:col-span-4 border-[#FFF3C2]/5"
+          >
+            <p className="text-[12px] md:text-[13px] italic text-[#E8DDB0] mb-4 leading-relaxed">"Excelente compañero y profesional con un alto compromiso hacia su trabajo, siempre con la mejor actitud para apoyar al equipo."</p>
+            <p className="font-outfit text-[11px] md:text-[12px] font-medium text-[#F5F1EB]">Sergio Ángel</p>
+            <p className="font-azeret text-[8px] md:text-[9px] text-[#8C8378] mt-1 uppercase">Comunicador Visual</p>
+          </motion.div>
+
         </div>
+
+        <p className="font-azeret text-[10px] md:text-[11px] text-[#8C8378] text-center mt-10 md:mt-12">
+          Resultados en industrias de reclutamiento y desarrollo organizacional, fintech y e-commerce.
+        </p>
       </div>
     </section>
   );
@@ -702,6 +733,14 @@ const VisionSection = () => {
               <p className="text-[12px] md:text-[13px] italic text-[#2D2926]/80 mb-4 md:mb-6 leading-relaxed">"Su trabajo va más allá de crear una página web, sino de grandes ideas y estrategias."</p>
               <p className="font-outfit text-[12px] md:text-[13px] font-bold text-[#2D2926]">Erick Toledo</p>
               <p className="font-azeret text-[9px] md:text-[10px] uppercase text-[#6B2D3C] mt-1">Community Manager</p>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0.3, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-[#EBE6DE]/80 p-5 md:p-6 rounded-[16px] border border-[#EBE6DE] sm:col-span-2 neumorphism-light"
+            >
+              <p className="text-[12px] md:text-[13px] italic text-[#2D2926]/80 mb-4 md:mb-6 leading-relaxed">"Una persona con un aprendizaje continuo, propositivo, muy inteligente, siempre emprendiendo nuevas ideas."</p>
+              <p className="font-outfit text-[12px] md:text-[13px] font-bold text-[#2D2926]">Carlos Castro Paniagua</p>
+              <p className="font-azeret text-[9px] md:text-[10px] uppercase text-[#6B2D3C] mt-1">Desarrollo de líderes y equipos</p>
             </motion.div>
           </div>
         </div>
