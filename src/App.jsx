@@ -2,23 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ArrowRight, User, Mail, Building2, Phone, MessageSquare } from 'lucide-react';
 import GlobalStyles from './styles/GlobalStyles';
-
-// --- CUSTOM HOOK PARA VERCEL (SSR SAFE) ---
-// Esto evita el error de "window is not defined" al hacer deploy
-const useWindowSize = () => {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
-  });
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const handleResize = () => setWindowSize({ width: window.innerWidth });
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return windowSize;
-};
+import useWindowSize from './hooks/useWindowSize';
 
 // --- COMPONENTES UI REUTILIZABLES ---
 const Button = ({ children, onClick, href, className = '', variant = 'primary' }) => {
