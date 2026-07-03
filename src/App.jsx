@@ -3,131 +3,12 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ArrowRight, User, Mail, Building2, Phone, MessageSquare } from 'lucide-react';
 import GlobalStyles from './styles/GlobalStyles';
 import useWindowSize from './hooks/useWindowSize';
-
-// --- COMPONENTES UI REUTILIZABLES ---
-const Button = ({ children, onClick, href, className = '', variant = 'primary' }) => {
-  const baseStyle = "inline-flex items-center justify-center font-outfit rounded-full transition-all duration-[600ms] cursor-pointer text-center";
-  
-  const variants = {
-    primary: "bg-[#6B2D3C] border border-[#6B2D3C]/50 text-[#F5F1EB] px-8 py-3.5 shadow-[0_4px_15px_rgba(107,45,60,0.3)] hover:shadow-[0_8px_30px_rgba(107,45,60,0.5)] hover:scale-105 hover:-translate-y-1 hover:bg-[#8A3F52]",
-    secondary: "bg-[#2D2926]/60 backdrop-blur-md border border-[#FFF3C2]/10 text-[#E8DDB0] px-6 py-3 hover:bg-[#2D2926]/80 hover:text-[#FFF3C2] hover:scale-105 hover:-translate-y-0.5",
-  };
-
-  const Tag = href ? 'a' : 'button';
-  return (
-    <Tag href={href} onClick={onClick} className={`${baseStyle} ${variants[variant]} ${className}`}>
-      {children}
-    </Tag>
-  );
-};
-
-// --- COMPONENTE TILE SCROLL BACKGROUND ---
-const TileScrollBackground = () => {
-  const { scrollYProgress } = useScroll();
-  const xRight1 = useTransform(scrollYProgress, [0, 1], [-150, 150]);
-  const xLeft1 = useTransform(scrollYProgress, [0, 1], [150, -150]);
-  const xRight2 = useTransform(scrollYProgress, [0, 1], [-100, 200]);
-  const xLeft2 = useTransform(scrollYProgress, [0, 1], [200, -100]);
-
-  const imgs = [
-    "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/01.jpg", "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/02.jpg", "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/03.jpg",
-    "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/04.jpg", "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/05.jpg", "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/06.jpg",
-    "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/07.jpg", "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/08.jpg", "https://www.elementpack.pro/demo/wp-content/uploads/2021/11/09.jpg"
-  ];
-
-  return (
-    <div className="tile-grid-container">
-      <motion.div style={{ x: xRight1 }} className="tile-row">
-        {imgs.map((src, i) => <img key={`r1-${i}`} src={src} className="tile-img" alt="" />)}
-      </motion.div>
-      <motion.div style={{ x: xLeft1 }} className="tile-row">
-        {[...imgs].reverse().map((src, i) => <img key={`r2-${i}`} src={src} className="tile-img" alt="" />)}
-      </motion.div>
-      <motion.div style={{ x: xRight2 }} className="tile-row">
-        {imgs.map((src, i) => <img key={`r3-${i}`} src={src} className="tile-img" alt="" />)}
-      </motion.div>
-      <motion.div style={{ x: xLeft2 }} className="tile-row">
-        {[...imgs].reverse().map((src, i) => <img key={`r4-${i}`} src={src} className="tile-img" alt="" />)}
-      </motion.div>
-    </div>
-  );
-};
-
+import Button from './components/Button';
+import TileScrollBackground from './components/TileScrollBackground';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 // --- SECCIONES PRINCIPALES ---
-
-const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-  
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 80);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const toggleMenu = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    
-    if (!menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    
-    setMenuOpen(!menuOpen);
-    setTimeout(() => setIsAnimating(false), 1000);
-  };
-
-  return (
-    <>
-      <nav className={`fixed top-0 w-full z-[10002] transition-all duration-[600ms] ${scrolled ? 'bg-[#1A1714]/90 backdrop-blur-xl border-b border-[#FFF3C2]/5 py-3 shadow-lg' : 'bg-transparent py-4 md:py-6'}`}>
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center relative z-[10003]">
-          <img src="https://i.ibb.co/vxcmPB6y/logo-bc-dorado.png" alt="Brandon Chimal" className="h-6 md:h-8 object-contain" />
-          
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex space-x-8 items-center font-outfit text-[14px]">
-              {['Método', 'Resultados', 'Servicios'].map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} className="text-[#F5F1EB] hover:text-[#FFF3C2] transition-colors duration-[600ms]">
-                  {item}
-                </a>
-              ))}
-              <Button href="#contacto" className="!px-6 !py-2 text-sm">Hablar directo →</Button>
-            </div>
-
-            <div className={`uc_liquid_hamburger md:hidden ${menuOpen ? 'is-opened-navi' : ''}`} onClick={toggleMenu}>
-              <div className="hamburger__line hamburger__line--01"><div className="hamburger__line-in hamburger__line-in--01"></div></div>
-              <div className="hamburger__line hamburger__line--02"><div className="hamburger__line-in hamburger__line-in--02"></div></div>
-              <div className="hamburger__line hamburger__line--03"><div className="hamburger__line-in hamburger__line-in--03"></div></div>
-              <div className="hamburger__line hamburger__line--cross01"><div className="hamburger__line-in hamburger__line-in--cross01"></div></div>
-              <div className="hamburger__line hamburger__line--cross02"><div className="hamburger__line-in hamburger__line-in--cross02"></div></div>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* LIQUID OVERLAYS & GLOBAL MENU */}
-      <div className={menuOpen ? 'uc-menu-opened' : ''}>
-        <div className="shape-overlays">
-          <div className="shape-overlays__layer"></div>
-          <div className="shape-overlays__layer"></div>
-          <div className="shape-overlays__layer"></div>
-          <div className="shape-overlays__layer"></div>
-        </div>
-        <div className="global-menu">
-          <ul className="global-menu__wrap">
-            <li className="menu-item"><a href="#metodo" onClick={toggleMenu}>Método</a></li>
-            <li className="menu-item"><a href="#resultados" onClick={toggleMenu}>Resultados</a></li>
-            <li className="menu-item"><a href="#servicios" onClick={toggleMenu}>Servicios</a></li>
-            <li className="menu-item"><a href="#contacto" onClick={toggleMenu}>Contacto</a></li>
-          </ul>
-        </div>
-      </div>
-    </>
-  );
-};
 
 const Hero = () => {
   const { scrollY } = useScroll();
@@ -888,23 +769,6 @@ const FAQContactoSection = () => {
     </section>
   );
 };
-
-const Footer = () => (
-  <footer className="bg-[#1A1714] py-12 border-t border-[#FFF3C2]/5">
-    <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-6">
-      <img src="https://i.ibb.co/F4GqsGf2/logo-bc-vino.png" alt="Brandon Chimal" className="h-6 md:h-7 opacity-80" />
-      <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[12px] md:text-[13px] text-[#8C8378] font-dm">
-        <span>Brandon Chimal © 2026</span>
-        <span className="hidden sm:inline">|</span>
-        <div className="flex gap-4">
-          <a href="#" className="hover:text-[#FFF3C2] transition-colors duration-[600ms]">LinkedIn</a>
-          <span className="text-[#8C8378]/30">·</span>
-          <a href="#" className="hover:text-[#FFF3C2] transition-colors duration-[600ms]">Aviso de privacidad</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-);
 
 export default function App() {
   return (
