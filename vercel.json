@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/pulso", "destination": "/pulso.html" }
+  ]
+}
