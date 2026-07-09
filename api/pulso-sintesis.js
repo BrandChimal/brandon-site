@@ -1,6 +1,8 @@
 // --- FUNCIÓN SERVERLESS: MOTOR DE SÍNTESIS (Vercel) ---
 // Prompt v0.1 validado con 3 casos (motor-sintesis-pruebas.md).
-// Requiere env var ANTHROPIC_API_KEY en Vercel. Sin ella responde 503 y el
+// Proveedor actual: Gemini (decisión de Brandon 2026-07-08, mientras no haya
+// clave de Anthropic). Requiere env var GEMINI_API_KEY en Vercel; opcional
+// GEMINI_MODEL (default gemini-2.5-flash). Sin clave responde 503 y el
 // frontend usa el fallback honesto (canvas de plantilla + síntesis pendiente).
 
 const PALABRAS_PROHIBIDAS = [
@@ -48,35 +50,44 @@ function validar(data) {
 }
 
 async function llamarModelo(apiKey, answers) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-5',
-      max_tokens: 1024,
-      system: PROMPT_SISTEMA,
-      messages: [
-        {
-          role: 'user',
-          content: `Respuestas del ejercicio (los campos vacíos son vacíos reales, no los rellenes):\n${JSON.stringify(answers, null, 2)}`,
+  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: PROMPT_SISTEMA }] },
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Respuestas del ejercicio (los campos vacíos son vacíos reales, no los rellenes):\n${JSON.stringify(answers, null, 2)}`,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 1024,
+          responseMimeType: 'application/json',
         },
-      ],
-    }),
-  });
+      }),
+    }
+  );
   if (!res.ok) throw new Error(`API ${res.status}`);
   const body = await res.json();
-  const texto = body?.content?.[0]?.text || '';
+  const texto = body?.candidates?.[0]?.content?.parts?.[0]?.text || '';
   return JSON.parse(texto);
 }
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'Motor no configurado' });
 
   const { answers } = req.body || {};
