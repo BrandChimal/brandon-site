@@ -21,6 +21,11 @@ REGLAS INQUEBRANTABLES:
 6. Palabras prohibidas (no usarlas nunca): ${PALABRAS_PROHIBIDAS.join(', ')}. Nada de tono infomercial ni de gurú.
 7. Máximo 60 palabras por campo.
 
+CALIBRACIÓN POR TIPO DE CLIENTE (campo "tipoCliente"):
+- "A empresas": lenguaje de negocio (clientes, ventas, resultados) sin jerga corporativa.
+- "A personas": lenguaje cotidiano de consumo; nada de vocabulario de marketing.
+- "A ambos" o vacío: lenguaje llano que funcione para los dos.
+
 CALIBRACIÓN POR MOMENTO DEL NEGOCIO:
 - Arrancando: prioriza claridad de a quién hablarle primero.
 - Estancado: prioriza la desconexión detectada.

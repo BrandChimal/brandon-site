@@ -1,35 +1,36 @@
 // --- MOTOR DE PLANTILLAS ---
 // Arma los 4 canvas con las respuestas de la persona (determinístico, sin IA)
 // y detecta vacíos. Regla de la spec: vacío = pregunta abierta, nunca relleno.
+// Estructura fiel al Brandbook v2.0 §07–§10 y Modelo de Negocio 2026 §03.1.
 
 const LABELS = {
-  mejorCliente: 'Tu mejor cliente real',
-  trigger: 'Qué lo empujó a buscarte',
-  barrera: 'Qué casi lo detiene',
-  verbatim: 'En sus palabras',
-  creeNecesita: 'Cree que necesita vs. necesita',
-  competencia: 'Qué oye de otras opciones',
-  antesDespues: 'El dolor que desaparece (antes → después)',
-  distinto: 'Lo difícil de encontrar en otro lado',
-  prueba: 'Lo que puedes probar',
-  enoja: 'La tensión: qué está mal en tu industria',
-  perderian: 'Lo mejor de tu negocio: qué perderían sin ti',
-  mundoMejor: 'El mundo sería un poco mejor si…',
+  quienEs: 'Quién es',
+  queResuelve: 'Qué necesita resolver (jobs to be done)',
+  frenaEmpuja: 'Barreras y triggers de compra',
+  piensaSiente: 'Qué piensa y siente',
+  veOye: 'Qué ve y oye',
+  doloresGanancias: 'Pains y gains',
+  queOfreces: 'Productos y servicios',
+  aliviaDolores: 'Cómo alivia dolores (pain relievers)',
+  generaGanancias: 'Qué ganancias genera (gain creators)',
+  tension: 'Tensión cultural',
+  loMejor: 'Lo mejor de la marca',
+  mundoMejor: 'El mundo sería mejor si…',
 };
 
 const PREGUNTAS_ABIERTAS = {
-  mejorCliente: '¿Quién es tu mejor cliente real — el que volvió o volvería? Sin él, el resto del análisis habla de un cliente imaginario.',
-  trigger: '¿Qué pasa en la vida de tu cliente justo antes de buscarte? Ese momento define dónde debe aparecer tu comunicación.',
-  barrera: '¿Qué casi detiene a tu cliente de comprarte? Tu comunicación debería responderlo antes de que lo pregunte.',
-  verbatim: '¿Qué frase textual te ha dicho un cliente? Vale más que cualquier eslogan.',
-  creeNecesita: '¿Qué cree tu cliente que necesita y qué necesita en realidad? La diferencia entre ambas es tu ángulo de comunicación.',
-  competencia: '¿Qué promesas oye tu cliente de otras opciones? Sin esto no sabes contra qué te comparan.',
-  antesDespues: '¿Qué cambia concretamente para tu cliente (antes → después)? Es la base de tu propuesta de valor.',
-  distinto: '¿Qué haces que cuesta encontrar en otro lado? Sin esto, compites por precio.',
-  prueba: '¿Qué resultado puedes probar con un dato o un caso? Prometer sin prueba es lo que hace todo el mundo.',
-  enoja: '¿Qué te enoja de tu industria? Sin tensión no hay propósito, solo producto.',
-  perderian: '¿Qué perderían tus clientes si desaparecieras? Si la respuesta es "nada", ese es el hallazgo.',
-  mundoMejor: 'Completa: "el mundo sería un poco mejor si…" — el cierre de tu Big Ideal.',
+  quienEs: '¿Quién es tu cliente ideal? Sin perfil definido, el resto no tiene punto de referencia.',
+  queResuelve: '¿Qué necesita resolver tu cliente? Sus jobs to be done definen qué le tienes que decir.',
+  frenaEmpuja: '¿Qué lo frena antes de comprarte y qué lo empuja a decidirse? Barreras y triggers mueven la decisión.',
+  piensaSiente: '¿Qué piensa y siente tu cliente? La capa emocional detrás de sus decisiones.',
+  veOye: '¿Qué ve y oye a su alrededor? Su entorno define contra qué te comparan.',
+  doloresGanancias: '¿Qué le duele hoy y qué quiere ganar? Pains y gains son la materia prima de tu propuesta.',
+  queOfreces: '¿Qué productos o servicios ofreces, dicho en simple? Si cuesta explicarlo, cuesta comprarlo.',
+  aliviaDolores: '¿Cómo alivias los dolores de tu cliente? El encaje empieza aquí.',
+  generaGanancias: '¿Qué ganancias le generas? El resultado que se lleva, no la lista de servicios.',
+  tension: '¿Qué está mal en tu industria y ya cansó a tus clientes? Sin tensión cultural no hay Big Ideal.',
+  loMejor: '¿Qué es lo mejor que tu marca hace por sus clientes? La otra mitad de tu Big Ideal.',
+  mundoMejor: 'Completa: "mi marca cree que el mundo sería mejor si…" — tu propósito en una frase.',
 };
 
 const clean = (v) => (typeof v === 'string' ? v.trim() : '');
@@ -45,22 +46,22 @@ export function buildCanvases(answers) {
     {
       framework: 'Buyer Persona',
       subtitle: 'A quién le hablas',
-      items: [item('mejorCliente'), item('trigger'), item('barrera')],
+      items: [item('quienEs'), item('queResuelve'), item('frenaEmpuja')],
     },
     {
       framework: 'Empathy Map',
       subtitle: 'Qué siente',
-      items: [item('verbatim'), item('creeNecesita'), item('competencia')],
+      items: [item('piensaSiente'), item('veOye'), item('doloresGanancias')],
     },
     {
       framework: 'Value Proposition Canvas',
       subtitle: 'Qué resuelves',
-      items: [item('antesDespues'), item('distinto'), item('prueba')],
+      items: [item('queOfreces'), item('aliviaDolores'), item('generaGanancias')],
     },
     {
-      framework: 'Big Ideal',
+      framework: 'The Big Ideal',
       subtitle: 'Por qué importas',
-      items: [item('enoja'), item('perderian'), item('mundoMejor')],
+      items: [item('tension'), item('loMejor'), item('mundoMejor')],
     },
   ];
 }

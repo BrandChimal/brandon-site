@@ -1,16 +1,23 @@
 // --- PULSO DE IDENTIDAD EXPRESS · DEFINICIÓN DEL EJERCICIO ---
-// Fuente: spec-pulso-express.md (aprobada 2026-07-06).
-// Principio: cada pregunta pide EVIDENCIA (hechos, frases textuales, situaciones
-// reales), no definiciones abstractas. El análisis solo puede ser tan bueno
-// como la materia prima que recogen estas preguntas.
+// Preguntas fieles a los frameworks tal como están documentados en el
+// Brandbook Ese Momento v2.0 (§07–§10) y el Modelo de Negocio 2026 (§03.1):
+// · Buyer Persona = perfil + jobs to be done + barreras y triggers
+// · Empathy Map = ve / oye / piensa y siente / pains y gains
+// · Value Proposition Canvas = productos y servicios + pain relievers + gain creators
+// · The Big Ideal = tensión cultural (lo que cansa a los CLIENTES, no a la
+//   industria) + lo mejor de la marca → "el mundo sería mejor si…"
+//
+// Los placeholders se adaptan al tipo de cliente (empresas / personas) elegido
+// en el contexto: pueden ser string o { empresas, personas }.
 
 export const MOMENTOS_NEGOCIO = ['Arrancando', 'Creciendo', 'Estancado', 'Escalando'];
+export const TIPOS_CLIENTE = ['A empresas', 'A personas', 'A ambos'];
 
 export const SECTIONS = [
   {
     id: 'contexto',
     label: 'Contexto',
-    intro: 'Primero, lo básico. Tres datos para que el análisis hable de tu negocio y no de uno genérico.',
+    intro: 'Primero, lo básico. Cuatro datos para que el resultado hable de tu negocio y no de uno genérico.',
     questions: [
       {
         id: 'nombre',
@@ -22,9 +29,16 @@ export const SECTIONS = [
       {
         id: 'queVendes',
         type: 'text',
-        q: '¿Qué vendes y a quién? En una línea.',
-        placeholder: 'Ej. "Software de RH para empresas medianas en México"',
+        q: '¿Qué vendes? En una línea.',
+        placeholder: 'Ej. "Skincare natural" o "Software de recursos humanos"',
         required: true,
+      },
+      {
+        id: 'tipoCliente',
+        type: 'select',
+        q: '¿A quién le vendes?',
+        options: TIPOS_CLIENTE,
+        required: false,
       },
       {
         id: 'momento',
@@ -39,27 +53,39 @@ export const SECTIONS = [
     id: 'persona',
     label: 'A quién le hablas',
     framework: 'Buyer Persona',
-    intro: 'Olvida al cliente ideal que imaginas. Vamos a trabajar con el real.',
+    intro: 'El perfil real de tu cliente ideal: quién es, qué necesita resolver y qué mueve su decisión.',
     questions: [
       {
-        id: 'mejorCliente',
+        id: 'quienEs',
         type: 'textarea',
-        q: 'Piensa en tu mejor cliente real. ¿Quién es, qué te compró y por qué volvió (o volvería)?',
-        placeholder: 'Ej. "Un despacho contable de 12 personas; contrató la cobranza automática y volvió porque recuperó 40% de su cartera vencida"',
+        short: 'Quién es',
+        q: '¿Quién es tu cliente ideal?',
+        placeholder: {
+          empresas: 'Ej. "Founder o responsable de marketing, empresa de 5 a 30 personas, en México"',
+          personas: 'Ej. "Mujer de 28 a 40 años, en CDMX, que cuida su piel y ya no cree en milagros"',
+        },
         required: false,
       },
       {
-        id: 'trigger',
+        id: 'queResuelve',
         type: 'textarea',
-        q: '¿Qué estaba pasando en su negocio o su vida justo antes de buscarte?',
-        placeholder: 'El momento exacto que lo empujó a buscar una solución',
+        short: 'Qué necesita resolver',
+        q: '¿Qué necesita resolver tu cliente?',
+        placeholder: {
+          empresas: 'Ej. "Conseguir clientes que lleguen listos para comprar y que los que ya tiene regresen"',
+          personas: 'Ej. "Encontrar una rutina que sí funcione sin gastar de más"',
+        },
         required: false,
       },
       {
-        id: 'barrera',
+        id: 'frenaEmpuja',
         type: 'textarea',
-        q: '¿Qué casi lo detiene de comprarte?',
-        placeholder: 'La duda, el miedo o la objeción real que tuvo antes de decidirse',
+        short: 'Qué lo frena y qué lo empuja',
+        q: '¿Qué lo frena antes de comprarte y qué lo empuja a decidirse?',
+        placeholder: {
+          empresas: 'Ej. "Lo frena: ya le quedaron mal antes. Lo empuja: necesita resultados este trimestre"',
+          personas: 'Ej. "La frena: ya probó de todo. La empuja: la recomendación de alguien en quien confía"',
+        },
         required: false,
       },
     ],
@@ -68,27 +94,39 @@ export const SECTIONS = [
     id: 'empatia',
     label: 'Qué siente',
     framework: 'Empathy Map',
-    intro: 'Aquí vale más una frase textual que diez suposiciones.',
+    intro: 'La capa emocional detrás de sus decisiones: lo que ve, oye, piensa y siente.',
     questions: [
       {
-        id: 'verbatim',
+        id: 'piensaSiente',
         type: 'textarea',
-        q: 'Escribe una frase que un cliente te haya dicho tal cual y que se te quedó grabada.',
-        placeholder: 'Ej. "yo no estudié contabilidad para andar rogando que me paguen"',
+        short: 'Piensa y siente',
+        q: '¿Qué piensa y siente tu cliente?',
+        placeholder: {
+          empresas: 'Ej. "Dice: necesito vender más. Siente: necesito que mi negocio importe"',
+          personas: 'Ej. "Dice: quiero algo que sí funcione. Siente: miedo de volver a equivocarse"',
+        },
         required: false,
       },
       {
-        id: 'creeNecesita',
+        id: 'veOye',
         type: 'textarea',
-        q: '¿Qué cree tu cliente que necesita — y qué necesita en realidad, según tú?',
-        placeholder: 'Ej. "Cree que necesita más clientes; necesita cobrarle a los que ya tiene"',
+        short: 'Ve y oye',
+        q: '¿Qué ve y oye a su alrededor?',
+        placeholder: {
+          empresas: 'Ej. "Ve competidores creciendo. Oye consejos de \'invierte más en anuncios\'"',
+          personas: 'Ej. "Ve marcas que prometen milagros. Oye recomendaciones que no le cuadran"',
+        },
         required: false,
       },
       {
-        id: 'competencia',
+        id: 'doloresGanancias',
         type: 'textarea',
-        q: 'Cuando compara opciones, ¿qué promesas oye de tus competidores y qué opina de ellas?',
-        placeholder: 'Lo que le prometen otros y por qué no le convence (o sí)',
+        short: 'Dolores y ganancias',
+        q: '¿Qué le duele hoy y qué quiere ganar?',
+        placeholder: {
+          empresas: 'Ej. "Le duele invertir sin ver resultados. Quiere clientes que recomienden su negocio"',
+          personas: 'Ej. "Le duele sentirse engañada por promesas. Quiere confiar en lo que compra"',
+        },
         required: false,
       },
     ],
@@ -97,27 +135,36 @@ export const SECTIONS = [
     id: 'valor',
     label: 'Qué resuelves',
     framework: 'Value Proposition Canvas',
-    intro: 'Tu valor no es lo que haces: es lo que cambia para tu cliente.',
+    intro: 'Tu mapa de valor: lo que ofreces, los dolores que alivias y las ganancias que generas.',
     questions: [
       {
-        id: 'antesDespues',
+        id: 'queOfreces',
         type: 'textarea',
-        q: '¿Qué dolor concreto desaparece cuando alguien trabaja contigo? Descríbelo como antes → después.',
-        placeholder: 'Ej. "Antes: perseguir pagos por WhatsApp. Después: la cobranza corre sola"',
+        short: 'Productos y servicios',
+        q: '¿Qué productos o servicios ofreces?',
+        placeholder: 'Dicho en simple, como se lo dirías a tu cliente',
         required: false,
       },
       {
-        id: 'distinto',
+        id: 'aliviaDolores',
         type: 'textarea',
-        q: '¿Qué haces distinto que a tus clientes más les costaría encontrar en otro lado?',
-        placeholder: 'Lo que un competidor no puede copiar fácil',
+        short: 'Cómo alivias sus dolores',
+        q: '¿Cómo alivias los dolores de tu cliente?',
+        placeholder: {
+          empresas: 'Ej. "Le muestro exactamente dónde pierde clientes, en lugar de darle otro reporte"',
+          personas: 'Ej. "Fórmulas cortas y explicadas: sabe qué se pone y por qué"',
+        },
         required: false,
       },
       {
-        id: 'prueba',
+        id: 'generaGanancias',
         type: 'textarea',
-        q: '¿Qué puedes prometer que sí puedes probar? Un resultado, un dato, un caso.',
-        placeholder: 'Ej. "45% de mis clientas recompran en menos de 90 días"',
+        short: 'Qué ganancias le generas',
+        q: '¿Qué ganancias le generas?',
+        placeholder: {
+          empresas: 'Ej. "Clientes que regresan y números que por fin entiende"',
+          personas: 'Ej. "Piel tranquila y cero dudas al volver a comprar"',
+        },
         required: false,
       },
     ],
@@ -125,28 +172,34 @@ export const SECTIONS = [
   {
     id: 'bigIdeal',
     label: 'Por qué importas',
-    framework: 'Big Ideal',
-    intro: 'Más allá de vender: la razón por la que tu negocio merece existir.',
+    framework: 'The Big Ideal',
+    intro: 'Tu propósito profundo: lo que ya cansó a tus clientes + lo mejor de tu marca.',
     questions: [
       {
-        id: 'enoja',
+        id: 'tension',
         type: 'textarea',
-        q: '¿Qué te enoja de cómo funciona tu industria hoy?',
-        placeholder: 'Lo que ves que todos hacen mal y tú te niegas a repetir',
+        short: 'La tensión cultural',
+        q: '¿Qué es eso que ya cansó a tus clientes de cómo funcionan las cosas?',
+        placeholder: {
+          empresas: 'Ej. "Que los traten como números: promesas grandes, atención de máquina"',
+          personas: 'Ej. "Que las marcas prometan milagros y entreguen lo mismo de siempre"',
+        },
         required: false,
       },
       {
-        id: 'perderian',
+        id: 'loMejor',
         type: 'textarea',
-        q: 'Si tu negocio desapareciera mañana, ¿qué perderían tus clientes que nadie más les daría?',
-        placeholder: 'Lo insustituible',
+        short: 'Lo mejor de tu marca',
+        q: '¿Qué es lo mejor que tu marca hace por sus clientes?',
+        placeholder: 'Eso que haces con más orgullo y que ellos más agradecen',
         required: false,
       },
       {
         id: 'mundoMejor',
         type: 'textarea',
-        q: 'Completa la frase: "El mundo sería un poco mejor si…"',
-        placeholder: '…',
+        short: 'El mundo sería mejor si…',
+        q: 'Completa la frase: "Mi marca cree que el mundo sería mejor si…"',
+        placeholder: 'Ej. "…comprar skincare no requiriera fe ciega" o "…lo digital se sintiera personal"',
         required: false,
       },
     ],
@@ -167,3 +220,11 @@ export const PALABRAS_PROHIBIDAS = [
   'conocimiento técnico',
   'persona del otro lado',
 ];
+
+// Resuelve un placeholder que puede variar según a quién le vende el negocio.
+export function resolvePlaceholder(placeholder, tipoCliente) {
+  if (typeof placeholder === 'string' || !placeholder) return placeholder || '';
+  if (tipoCliente === 'A empresas') return placeholder.empresas;
+  if (tipoCliente === 'A personas') return placeholder.personas;
+  return placeholder.personas; // "A ambos" o sin definir: el ejemplo más llano
+}
