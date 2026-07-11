@@ -50,7 +50,8 @@ function validar(data) {
 }
 
 async function llamarModelo(apiKey, answers) {
-  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  // gemini-flash-latest: alias oficial que siempre apunta al Flash vigente.
+  const model = process.env.GEMINI_MODEL || 'gemini-flash-latest';
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
@@ -78,7 +79,10 @@ async function llamarModelo(apiKey, answers) {
       }),
     }
   );
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  if (!res.ok) {
+    const detalle = await res.text().catch(() => '');
+    throw new Error(`Gemini ${res.status}: ${detalle.slice(0, 300)}`);
+  }
   const body = await res.json();
   const texto = body?.candidates?.[0]?.content?.parts?.[0]?.text || '';
   return JSON.parse(texto);
@@ -98,8 +102,10 @@ export default async function handler(req, res) {
     try {
       const data = await llamarModelo(apiKey, answers);
       if (validar(data)) return res.status(200).json(data);
-    } catch {
-      // sigue al siguiente intento
+      console.error(`[pulso-sintesis] intento ${intento + 1}: output no pasó validación`);
+    } catch (e) {
+      // Visible en los logs de funciones de Vercel para diagnóstico.
+      console.error(`[pulso-sintesis] intento ${intento + 1}:`, e.message);
     }
   }
   return res.status(502).json({ error: 'Síntesis no disponible' });
