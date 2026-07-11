@@ -73,7 +73,9 @@ async function llamarModelo(apiKey, answers) {
           },
         ],
         generationConfig: {
-          maxOutputTokens: 1024,
+          // Amplio: en los Flash recientes los tokens de razonamiento se
+          // descuentan de este límite; 1024 cortaba el JSON a la mitad.
+          maxOutputTokens: 8192,
           responseMimeType: 'application/json',
         },
       }),
@@ -84,7 +86,13 @@ async function llamarModelo(apiKey, answers) {
     throw new Error(`Gemini ${res.status}: ${detalle.slice(0, 300)}`);
   }
   const body = await res.json();
-  const texto = body?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  // Une todas las partes de texto (algunos modelos devuelven varias) y
+  // recorta cualquier envoltura antes/después del objeto JSON.
+  const partes = body?.candidates?.[0]?.content?.parts || [];
+  let texto = partes.map((p) => p?.text || '').join('');
+  const ini = texto.indexOf('{');
+  const fin = texto.lastIndexOf('}');
+  if (ini !== -1 && fin > ini) texto = texto.slice(ini, fin + 1);
   return JSON.parse(texto);
 }
 
