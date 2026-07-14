@@ -21,10 +21,12 @@ export async function pedirSintesis(answers) {
     if (!res.ok) return { ok: false };
 
     const data = await res.json();
-    // Validación mínima de estructura + filtro de marca sobre todo el texto.
+    // Validación mínima de estructura v2 + filtro de marca sobre todo el JSON.
     const campos = [data.pulsoEnUnaFrase, data.fortaleza, data.desconexion, data.siguientePaso];
     if (campos.some((c) => typeof c !== 'string' || !c.trim())) return { ok: false };
-    if (!campos.every(pasaFiltroDeMarca)) return { ok: false };
+    if (!data.buyerPersona || !data.empathyMap || !data.vpc || !data.bigIdeal) return { ok: false };
+    if (!data.diagnosticoMomento?.momento) return { ok: false };
+    if (!pasaFiltroDeMarca(JSON.stringify(data))) return { ok: false };
 
     return { ok: true, data };
   } catch {

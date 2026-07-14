@@ -8,6 +8,7 @@ import { pedirSintesis, guardarLead } from './synthesis';
 import { EASE, fadeUp, staggerContainer, useReducedMotion } from './animations';
 import LivingCanvas, { FRAMEWORKS } from './LivingCanvas';
 import QuestionCard from './QuestionCard';
+import { EntregablesGrid, DiagnosticoCard } from './Entregables';
 
 // --- PULSO DE IDENTIDAD · EXPRESS · CANVAS VIVO ---
 // Concepto: tu Pulso se construye mientras respondes. Izquierda: una pregunta
@@ -250,58 +251,80 @@ export default function PulsoApp() {
                 </motion.div>
 
                 {sintesis.estado === 'ok' && (
-                  <motion.div
-                    variants={staggerContainer(0.15, 0.2)}
-                    initial="hidden"
-                    animate="show"
-                    className="grid md:grid-cols-3 gap-4 mb-10"
-                  >
-                    {[
-                      ['Una fortaleza que quizá no ves', sintesis.data.fortaleza],
-                      ['Una desconexión', sintesis.data.desconexion],
-                      ['Tu siguiente paso esta semana', sintesis.data.siguientePaso],
-                    ].map(([titulo, texto]) => (
-                      <motion.div key={titulo} variants={fadeUp} className="glass-warm rounded-[24px] p-6 neumorphism-light">
-                        <span className="font-azeret text-[9px] uppercase tracking-widest text-[#6B2D3C] block mb-3">{titulo}</span>
-                        <p className="text-[14px] leading-relaxed text-[#2D2926]/85">{texto}</p>
-                      </motion.div>
-                    ))}
-                  </motion.div>
+                  <>
+                    {/* Diagnóstico del método: dónde se rompe la conexión */}
+                    <motion.div
+                      variants={staggerContainer(0.15, 0.15)}
+                      initial="hidden"
+                      animate="show"
+                      className="mb-6"
+                    >
+                      <DiagnosticoCard data={sintesis.data.diagnosticoMomento || {}} />
+                    </motion.div>
+
+                    {/* Los 4 entregables en su estructura canónica */}
+                    <div className="mb-6">
+                      <EntregablesGrid data={sintesis.data} nombre={answers.nombre} />
+                    </div>
+
+                    {/* Lo que tu Pulso revela */}
+                    <motion.div
+                      variants={staggerContainer(0.15, 0.1)}
+                      initial="hidden"
+                      whileInView="show"
+                      viewport={{ once: true, margin: '-10% 0px' }}
+                      className="grid md:grid-cols-3 gap-4 mb-10"
+                    >
+                      {[
+                        ['Una fortaleza que quizá no ves', sintesis.data.fortaleza],
+                        ['Una desconexión', sintesis.data.desconexion],
+                        ['Tu siguiente paso esta semana', sintesis.data.siguientePaso],
+                      ].map(([titulo, texto]) => (
+                        <motion.div key={titulo} variants={fadeUp} className="glass-warm rounded-[24px] p-6 neumorphism-light">
+                          <span className="font-azeret text-[9px] uppercase tracking-widest text-[#6B2D3C] block mb-3">{titulo}</span>
+                          <p className="text-[14px] leading-relaxed text-[#2D2926]/85">{texto}</p>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </>
                 )}
 
                 {sintesis.estado === 'pendiente' && (
                   <div className="glass-warm rounded-[24px] p-6 mb-10 text-center">
                     <p className="text-[14px] text-[#2D2926]/70">
-                      El análisis a profundidad llega junto con tu PDF por correo. Abajo tienes tu base armada
-                      y las preguntas que quedaron abiertas.
+                      No pudimos generar tu análisis en este momento. Abajo tienes tu base armada
+                      con tus palabras y las preguntas que quedaron abiertas — vuelve a intentarlo
+                      más tarde, tus respuestas siguen aquí.
                     </p>
                   </div>
                 )}
 
-                {/* El tablero que construiste, ahora en grande (morph por layoutId) */}
-                <div className="grid md:grid-cols-2 gap-4 mb-10">
-                  {FRAMEWORKS.map((s, i) => {
-                    const c = canvases[i];
-                    return (
-                      <motion.div key={s.id} layoutId={`canvas-${s.id}`} className="glass-warm rounded-[24px] p-6 neumorphism-light">
-                        <span className="font-azeret text-[9px] uppercase tracking-widest text-[#8C8378] block">{c.subtitle}</span>
-                        <h3 className="font-outfit text-lg mb-4">{c.framework}</h3>
-                        <div className="space-y-3">
-                          {c.items.map((it) => (
-                            <div key={it.id}>
-                              <span className="text-[11px] font-medium text-[#6B2D3C] block">{it.label}</span>
-                              {it.value ? (
-                                <p className="text-[13px] text-[#2D2926]/80 leading-relaxed">{it.value}</p>
-                              ) : (
-                                <p className="text-[13px] text-[#8C8378] italic">Sin respuesta — quedó como pregunta abierta.</p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                {/* Fallback de plantilla: solo cuando no hubo síntesis */}
+                {sintesis.estado !== 'ok' && (
+                  <div className="grid md:grid-cols-2 gap-4 mb-10">
+                    {FRAMEWORKS.map((s, i) => {
+                      const c = canvases[i];
+                      return (
+                        <motion.div key={s.id} layoutId={`canvas-${s.id}`} className="glass-warm rounded-[24px] p-6 neumorphism-light">
+                          <span className="font-azeret text-[9px] uppercase tracking-widest text-[#8C8378] block">{c.subtitle}</span>
+                          <h3 className="font-outfit text-lg mb-4">{c.framework}</h3>
+                          <div className="space-y-3">
+                            {c.items.map((it) => (
+                              <div key={it.id}>
+                                <span className="text-[11px] font-medium text-[#6B2D3C] block">{it.label}</span>
+                                {it.value ? (
+                                  <p className="text-[13px] text-[#2D2926]/80 leading-relaxed">{it.value}</p>
+                                ) : (
+                                  <p className="text-[13px] text-[#8C8378] italic">Sin respuesta — quedó como pregunta abierta.</p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {(sintesis.estado === 'ok' ? sintesis.data.preguntasAbiertas : gaps).length > 0 && (
                   <motion.div
