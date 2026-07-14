@@ -43,6 +43,11 @@ REGLAS INQUEBRANTABLES:
 6. Palabras prohibidas (no usarlas jamás): ${PALABRAS_PROHIBIDAS.join(', ')}.
 7. Máximo 60 palabras por campo de texto; máximo 4 elementos por lista.
 8. Todo en español, en segunda persona ("tu cliente", "tu negocio").
+9. VOZ DE CONSULTOR: escribe como un consultor hablándole de frente en una
+   sesión uno a uno. Frases cortas. Directo al punto. Cero preámbulos ("En el
+   mundo actual…", "Es importante mencionar que…" — prohibidos). Cero lenguaje
+   de reporte ("se observa que", "el análisis indica"). Si una frase no la
+   dirías en voz alta a alguien sentado frente a ti, reescríbela.
 
 Responde ÚNICAMENTE con un objeto JSON válido, sin markdown, con esta forma exacta:
 ${FORMATO_JSON}`;
@@ -61,6 +66,10 @@ CHECKLIST — corrige todo lo que falle:
 7. ¿Hay al menos una cita textual del usuario en fortaleza, desconexion y siguientePaso?
 8. Cero palabras prohibidas: ${PALABRAS_PROHIBIDAS.join(', ')}. Cero tono infomercial.
 9. Máximo 60 palabras por campo de texto, 4 elementos por lista.
+10. ¿Suena a consultor hablando de frente, o a robot/reporte? Todo lo que
+    suene a documento ("se observa", "el presente análisis", preámbulos,
+    frases largas encadenadas) se reescribe corto y directo, como se dice
+    en voz alta.
 
 Responde ÚNICAMENTE con el objeto JSON final corregido, sin markdown, mismo formato que el borrador.`;
 

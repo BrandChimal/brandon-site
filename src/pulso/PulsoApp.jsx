@@ -8,7 +8,7 @@ import { pedirSintesis, guardarLead } from './synthesis';
 import { EASE, fadeUp, staggerContainer, useReducedMotion } from './animations';
 import LivingCanvas, { FRAMEWORKS } from './LivingCanvas';
 import QuestionCard from './QuestionCard';
-import { EntregablesGrid, DiagnosticoCard } from './Entregables';
+import ResultSlides from './ResultSlides';
 
 // --- PULSO DE IDENTIDAD · EXPRESS · CANVAS VIVO ---
 // Concepto: tu Pulso se construye mientras respondes. Izquierda: una pregunta
@@ -77,6 +77,60 @@ export default function PulsoApp() {
   const paso = typeof screen === 'number' ? STEPS[screen] : null;
   const setAnswer = (id, value) => setAnswers((a) => ({ ...a, [id]: value }));
 
+  const enviarLead = async (e) => {
+    e.preventDefault();
+    setLead((l) => ({ ...l, estado: 'enviando' }));
+    const ok = await guardarLead({ nombre: lead.nombre, email: lead.email, answers });
+    setLead((l) => ({ ...l, estado: ok ? 'ok' : 'error' }));
+  };
+
+  // Card de captura: vive en la última slide de la sesión (ok) y en el fallback.
+  const captura = (
+    <div className="glass-warm rounded-[24px] p-6 md:p-10 neumorphism-light text-center">
+      {lead.estado === 'ok' ? (
+        <div className="flex flex-col items-center gap-3">
+          <Check className="text-[#6B2D3C]" size={28} />
+          <p className="font-outfit text-lg">Listo. Tu Pulso completo va en camino a {lead.email}.</p>
+        </div>
+      ) : (
+        <>
+          <h3 className="font-outfit text-xl md:text-2xl mb-2">Tu Pulso completo en PDF, a tu correo.</h3>
+          <p className="text-[14px] text-[#2D2926]/60 mb-6">Los cuatro documentos armados + el análisis, listos para usar.</p>
+          <form onSubmit={enviarLead} className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+            <input
+              type="text"
+              value={lead.nombre}
+              onChange={(e) => setLead((l) => ({ ...l, nombre: e.target.value }))}
+              placeholder="Tu nombre"
+              className="flex-1 bg-white/50 border border-white/60 rounded-full px-5 py-3.5 text-sm focus:outline-none focus:border-[#6B2D3C]/50 transition-all duration-[600ms] placeholder-[#8C8378]"
+            />
+            <input
+              type="email"
+              required
+              value={lead.email}
+              onChange={(e) => setLead((l) => ({ ...l, email: e.target.value }))}
+              placeholder="Tu correo"
+              className="flex-1 bg-white/50 border border-white/60 rounded-full px-5 py-3.5 text-sm focus:outline-none focus:border-[#6B2D3C]/50 transition-all duration-[600ms] placeholder-[#8C8378]"
+            />
+            <motion.button
+              type="submit"
+              whileTap={{ scale: 0.97 }}
+              className="font-outfit bg-[#6B2D3C] text-[#F5F1EB] rounded-full px-8 py-3.5 text-sm shadow-[0_4px_15px_rgba(107,45,60,0.3)] hover:shadow-[0_8px_30px_rgba(107,45,60,0.5)] hover:scale-105 hover:-translate-y-1 hover:bg-[#8A3F52] transition-all duration-[600ms]"
+            >
+              {lead.estado === 'enviando' ? 'Enviando…' : 'Enviármelo'}
+            </motion.button>
+          </form>
+          {lead.estado === 'error' && (
+            <p className="text-[12px] text-[#6B2D3C] mt-3">No se pudo enviar. Intenta de nuevo.</p>
+          )}
+          <p className="font-azeret text-[9px] uppercase tracking-widest text-[#B8AFA6] mt-5">
+            Tu correo se usa solo para enviarte tu Pulso y contenido útil. Nada más.
+          </p>
+        </>
+      )}
+    </div>
+  );
+
   const avanzar = () => {
     if (paso?.required && !(answers[paso.id] || '').trim()) return;
     setDir(1);
@@ -100,13 +154,6 @@ export default function PulsoApp() {
     } else {
       setSintesis({ estado: 'pendiente', data: null });
     }
-  };
-
-  const enviarLead = async (e) => {
-    e.preventDefault();
-    setLead((l) => ({ ...l, estado: 'enviando' }));
-    const ok = await guardarLead({ nombre: lead.nombre, email: lead.email, answers });
-    setLead((l) => ({ ...l, estado: ok ? 'ok' : 'error' }));
   };
 
   return (
@@ -231,62 +278,30 @@ export default function PulsoApp() {
                 animate={{ opacity: 1, transition: { duration: 0.6, ease: EASE } }}
                 className="max-w-4xl mx-auto"
               >
-                <motion.div
-                  variants={staggerContainer(0.15, 0.1)}
-                  initial="hidden"
-                  animate="show"
-                  className="text-center mb-10"
-                >
-                  <motion.span variants={fadeUp} className="font-azeret text-[10px] uppercase text-[#6B2D3C] font-medium block mb-4 tracking-widest">
-                    {answers.nombre ? `El Pulso de ${answers.nombre}` : 'Tu Pulso'}
-                  </motion.span>
-                  <motion.h2 variants={fadeUp} className="font-outfit text-2xl md:text-4xl leading-tight">
-                    {sintesis.estado === 'ok' ? sintesis.data.pulsoEnUnaFrase : 'Tu base estratégica, armada con tus palabras.'}
-                  </motion.h2>
-                  {sintesis.estado === 'cargando' && (
-                    <motion.p variants={fadeUp} className="font-azeret text-[10px] uppercase tracking-widest text-[#8C8378] mt-4 animate-pulse">
-                      Analizando tus respuestas…
-                    </motion.p>
-                  )}
-                </motion.div>
+                {sintesis.estado !== 'ok' && (
+                  <motion.div
+                    variants={staggerContainer(0.15, 0.1)}
+                    initial="hidden"
+                    animate="show"
+                    className="text-center mb-10"
+                  >
+                    <motion.span variants={fadeUp} className="font-azeret text-[10px] uppercase text-[#6B2D3C] font-medium block mb-4 tracking-widest">
+                      {answers.nombre ? `El Pulso de ${answers.nombre}` : 'Tu Pulso'}
+                    </motion.span>
+                    <motion.h2 variants={fadeUp} className="font-outfit text-2xl md:text-4xl leading-tight">
+                      Tu base estratégica, armada con tus palabras.
+                    </motion.h2>
+                    {sintesis.estado === 'cargando' && (
+                      <motion.p variants={fadeUp} className="font-azeret text-[10px] uppercase tracking-widest text-[#8C8378] mt-4 animate-pulse">
+                        Analizando tus respuestas…
+                      </motion.p>
+                    )}
+                  </motion.div>
+                )}
 
+                {/* Sesión guiada: una idea por pantalla */}
                 {sintesis.estado === 'ok' && (
-                  <>
-                    {/* Diagnóstico del método: dónde se rompe la conexión */}
-                    <motion.div
-                      variants={staggerContainer(0.15, 0.15)}
-                      initial="hidden"
-                      animate="show"
-                      className="mb-6"
-                    >
-                      <DiagnosticoCard data={sintesis.data.diagnosticoMomento || {}} />
-                    </motion.div>
-
-                    {/* Los 4 entregables en su estructura canónica */}
-                    <div className="mb-6">
-                      <EntregablesGrid data={sintesis.data} nombre={answers.nombre} />
-                    </div>
-
-                    {/* Lo que tu Pulso revela */}
-                    <motion.div
-                      variants={staggerContainer(0.15, 0.1)}
-                      initial="hidden"
-                      whileInView="show"
-                      viewport={{ once: true, margin: '-10% 0px' }}
-                      className="grid md:grid-cols-3 gap-4 mb-10"
-                    >
-                      {[
-                        ['Una fortaleza que quizá no ves', sintesis.data.fortaleza],
-                        ['Una desconexión', sintesis.data.desconexion],
-                        ['Tu siguiente paso esta semana', sintesis.data.siguientePaso],
-                      ].map(([titulo, texto]) => (
-                        <motion.div key={titulo} variants={fadeUp} className="glass-warm rounded-[24px] p-6 neumorphism-light">
-                          <span className="font-azeret text-[9px] uppercase tracking-widest text-[#6B2D3C] block mb-3">{titulo}</span>
-                          <p className="text-[14px] leading-relaxed text-[#2D2926]/85">{texto}</p>
-                        </motion.div>
-                      ))}
-                    </motion.div>
-                  </>
+                  <ResultSlides data={sintesis.data} nombre={answers.nombre} leadSlot={captura} />
                 )}
 
                 {sintesis.estado === 'pendiente' && (
@@ -326,7 +341,7 @@ export default function PulsoApp() {
                   </div>
                 )}
 
-                {(sintesis.estado === 'ok' ? sintesis.data.preguntasAbiertas : gaps).length > 0 && (
+                {sintesis.estado !== 'ok' && gaps.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -336,7 +351,7 @@ export default function PulsoApp() {
                   >
                     <span className="font-azeret text-[9px] uppercase tracking-widest text-[#E8DDB0] block mb-4">Preguntas abiertas</span>
                     <ul className="space-y-3">
-                      {(sintesis.estado === 'ok' ? sintesis.data.preguntasAbiertas : gaps).map((g, i) => (
+                      {gaps.map((g, i) => (
                         <motion.li
                           key={i}
                           initial={{ opacity: 0, x: -20 }}
@@ -352,56 +367,17 @@ export default function PulsoApp() {
                   </motion.div>
                 )}
 
-                {/* Captura */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.7, ease: EASE }}
-                  className="glass-warm rounded-[24px] p-6 md:p-10 neumorphism-light text-center"
-                >
-                  {lead.estado === 'ok' ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <Check className="text-[#6B2D3C]" size={28} />
-                      <p className="font-outfit text-lg">Listo. Tu Pulso completo va en camino a {lead.email}.</p>
-                    </div>
-                  ) : (
-                    <>
-                      <h3 className="font-outfit text-xl md:text-2xl mb-2">Tu Pulso completo en PDF, a tu correo.</h3>
-                      <p className="text-[14px] text-[#2D2926]/60 mb-6">Los cuatro documentos armados + el análisis, listos para usar.</p>
-                      <form onSubmit={enviarLead} className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
-                        <input
-                          type="text"
-                          value={lead.nombre}
-                          onChange={(e) => setLead((l) => ({ ...l, nombre: e.target.value }))}
-                          placeholder="Tu nombre"
-                          className="flex-1 bg-white/50 border border-white/60 rounded-full px-5 py-3.5 text-sm focus:outline-none focus:border-[#6B2D3C]/50 transition-all duration-[600ms] placeholder-[#8C8378]"
-                        />
-                        <input
-                          type="email"
-                          required
-                          value={lead.email}
-                          onChange={(e) => setLead((l) => ({ ...l, email: e.target.value }))}
-                          placeholder="Tu correo"
-                          className="flex-1 bg-white/50 border border-white/60 rounded-full px-5 py-3.5 text-sm focus:outline-none focus:border-[#6B2D3C]/50 transition-all duration-[600ms] placeholder-[#8C8378]"
-                        />
-                        <motion.button
-                          type="submit"
-                          whileTap={{ scale: 0.97 }}
-                          className="font-outfit bg-[#6B2D3C] text-[#F5F1EB] rounded-full px-8 py-3.5 text-sm shadow-[0_4px_15px_rgba(107,45,60,0.3)] hover:shadow-[0_8px_30px_rgba(107,45,60,0.5)] hover:scale-105 hover:-translate-y-1 hover:bg-[#8A3F52] transition-all duration-[600ms]"
-                        >
-                          {lead.estado === 'enviando' ? 'Enviando…' : 'Enviármelo'}
-                        </motion.button>
-                      </form>
-                      {lead.estado === 'error' && (
-                        <p className="text-[12px] text-[#6B2D3C] mt-3">No se pudo enviar. Intenta de nuevo.</p>
-                      )}
-                      <p className="font-azeret text-[9px] uppercase tracking-widest text-[#8C8378] mt-5">
-                        Tu correo se usa solo para enviarte tu Pulso y contenido útil. Nada más.
-                      </p>
-                    </>
-                  )}
-                </motion.div>
+                {/* Captura (solo en fallback; en la sesión vive en la última slide) */}
+                {sintesis.estado !== 'ok' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7, ease: EASE }}
+                  >
+                    {captura}
+                  </motion.div>
+                )}
               </motion.section>
             )}
           </AnimatePresence>
