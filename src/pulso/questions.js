@@ -60,6 +60,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Quién es',
         q: '¿Quién es tu cliente ideal?',
+        hint: 'Describe a la persona o negocio que más se beneficia de lo que haces: quién es, dónde está, qué lo define.',
         placeholder: {
           empresas: 'Ej. "Founder o responsable de marketing, empresa de 5 a 30 personas, en México"',
           personas: 'Ej. "Mujer de 28 a 40 años, en CDMX, que cuida su piel y ya no cree en milagros"',
@@ -71,6 +72,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Qué necesita resolver',
         q: '¿Qué necesita resolver tu cliente?',
+        hint: 'El problema o la necesidad principal por la que te busca.',
         placeholder: {
           empresas: 'Ej. "Conseguir clientes que lleguen listos para comprar y que los que ya tiene regresen"',
           personas: 'Ej. "Encontrar una rutina que sí funcione sin gastar de más"',
@@ -82,6 +84,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Qué lo frena y qué lo empuja',
         q: '¿Qué lo frena antes de comprarte y qué lo empuja a decidirse?',
+        hint: 'Primero la duda que lo detiene; luego lo que al final lo hace decir que sí.',
         placeholder: {
           empresas: 'Ej. "Lo frena: ya le quedaron mal antes. Lo empuja: necesita resultados este trimestre"',
           personas: 'Ej. "La frena: ya probó de todo. La empuja: la recomendación de alguien en quien confía"',
@@ -101,6 +104,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Piensa y siente',
         q: '¿Qué piensa y siente tu cliente?',
+        hint: 'Lo que dice en voz alta y lo que en el fondo le preocupa o desea.',
         placeholder: {
           empresas: 'Ej. "Dice: necesito vender más. Siente: necesito que mi negocio importe"',
           personas: 'Ej. "Dice: quiero algo que sí funcione. Siente: miedo de volver a equivocarse"',
@@ -112,6 +116,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Ve y oye',
         q: '¿Qué ve y oye a su alrededor?',
+        hint: 'Lo que observa en el mercado y lo que le dicen otros: amigos, redes, competencia.',
         placeholder: {
           empresas: 'Ej. "Ve competidores creciendo. Oye consejos de \'invierte más en anuncios\'"',
           personas: 'Ej. "Ve marcas que prometen milagros. Oye recomendaciones que no le cuadran"',
@@ -123,6 +128,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Dolores y ganancias',
         q: '¿Qué le duele hoy y qué quiere ganar?',
+        hint: 'Su mayor frustración actual y lo que quiere lograr o sentir.',
         placeholder: {
           empresas: 'Ej. "Le duele invertir sin ver resultados. Quiere clientes que recomienden su negocio"',
           personas: 'Ej. "Le duele sentirse engañada por promesas. Quiere confiar en lo que compra"',
@@ -142,6 +148,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Productos y servicios',
         q: '¿Qué productos o servicios ofreces?',
+        hint: 'Tu lista, dicha en simple — como se la contarías a tu cliente.',
         placeholder: 'Dicho en simple, como se lo dirías a tu cliente',
         required: false,
       },
@@ -150,6 +157,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Cómo alivias sus dolores',
         q: '¿Cómo alivias los dolores de tu cliente?',
+        hint: 'Cómo lo que ofreces le quita, en concreto, lo que le duele.',
         placeholder: {
           empresas: 'Ej. "Le muestro exactamente dónde pierde clientes, en lugar de darle otro reporte"',
           personas: 'Ej. "Fórmulas cortas y explicadas: sabe qué se pone y por qué"',
@@ -161,6 +169,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Qué ganancias le generas',
         q: '¿Qué ganancias le generas?',
+        hint: 'Lo bueno que obtiene gracias a ti: resultados, tranquilidad, tiempo, orgullo.',
         placeholder: {
           empresas: 'Ej. "Clientes que regresan y números que por fin entiende"',
           personas: 'Ej. "Piel tranquila y cero dudas al volver a comprar"',
@@ -180,6 +189,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'La tensión cultural',
         q: '¿Qué es eso que ya cansó a tus clientes de cómo funcionan las cosas?',
+        hint: 'Lo que en tu mercado ya hartó a los clientes — y que tú haces diferente.',
         placeholder: {
           empresas: 'Ej. "Que los traten como números: promesas grandes, atención de máquina"',
           personas: 'Ej. "Que las marcas prometan milagros y entreguen lo mismo de siempre"',
@@ -191,6 +201,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'Lo mejor de tu marca',
         q: '¿Qué es lo mejor que tu marca hace por sus clientes?',
+        hint: 'Tu mayor aporte: lo que haces con más orgullo y ellos más agradecen.',
         placeholder: 'Eso que haces con más orgullo y que ellos más agradecen',
         required: false,
       },
@@ -199,6 +210,7 @@ export const SECTIONS = [
         type: 'textarea',
         short: 'El mundo sería mejor si…',
         q: 'Completa la frase: "Mi marca cree que el mundo sería mejor si…"',
+        hint: 'Tu propósito en una frase: qué cambiaría si tu marca cumple su promesa.',
         placeholder: 'Ej. "…comprar skincare no requiriera fe ciega" o "…lo digital se sintiera personal"',
         required: false,
       },

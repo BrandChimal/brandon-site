@@ -4,6 +4,16 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // En local no corren las funciones de /api (viven en Vercel):
+    // el dev server las redirige a producción para poder probar el motor.
+    proxy: {
+      '/api': {
+        target: 'https://brandon-site-delta.vercel.app',
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     rollupOptions: {
       // Multi-page: el home (index.html) queda intacto; /pulso es entrada aparte.

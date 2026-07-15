@@ -49,6 +49,9 @@ const PulsoStyles = () => (
 );
 
 // Aplana las secciones en pasos individuales (una pregunta por pantalla).
+// `num` cuenta solo las 12 preguntas del ejercicio (coherente con el tablero);
+// las de contexto no llevan número.
+let contadorEjercicio = 0;
 const STEPS = SECTIONS.flatMap((s) =>
   s.questions.map((q, qi) => ({
     ...q,
@@ -56,6 +59,7 @@ const STEPS = SECTIONS.flatMap((s) =>
     sectionLabel: s.label,
     framework: s.framework || null,
     intro: qi === 0 ? s.intro : null,
+    num: s.framework ? ++contadorEjercicio : null,
   }))
 );
 
@@ -244,6 +248,7 @@ export default function PulsoApp() {
                       index={screen}
                       total={STEPS.length}
                       isFirst={screen === 0}
+                      isLast={screen === STEPS.length - 1}
                       tipoCliente={answers.tipoCliente}
                     />
                   </AnimatePresence>
@@ -260,7 +265,7 @@ export default function PulsoApp() {
                       transition={{ duration: 0.6, ease: EASE }}
                       className="font-azeret text-[11px]"
                     >
-                      {completadas} / {TOTAL_CANVAS}
+                      {completadas} de {TOTAL_CANVAS} respuestas
                     </motion.span>
                   </div>
                   <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar pr-1 pb-2">
@@ -403,7 +408,7 @@ export default function PulsoApp() {
               onClick={() => setCanvasOpen((o) => !o)}
               className="w-full glass-warm border-b-0 rounded-t-none flex items-center justify-between px-6 py-4 transition-all duration-[600ms]"
             >
-              <span className="font-azeret text-[10px] uppercase tracking-widest text-[#6B2D3C]">Tu Pulso · {completadas} / {TOTAL_CANVAS}</span>
+              <span className="font-azeret text-[10px] uppercase tracking-widest text-[#6B2D3C]">Tu Pulso · {completadas} de {TOTAL_CANVAS} respuestas</span>
               <ChevronUp size={16} className={`text-[#8C8378] transition-transform duration-[600ms] ${canvasOpen ? 'rotate-180' : ''}`} />
             </button>
           </div>

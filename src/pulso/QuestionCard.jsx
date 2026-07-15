@@ -29,7 +29,7 @@ const container = {
 
 export default function QuestionCard({
   step, value, onChange, onConfirm, onBack,
-  index, total, isFirst, tipoCliente,
+  index, total, isFirst, isLast, tipoCliente,
 }) {
   const inputRef = useRef(null);
   const placeholder = resolvePlaceholder(step.placeholder, tipoCliente);
@@ -59,7 +59,9 @@ export default function QuestionCard({
         <span className="font-azeret text-[10px] uppercase tracking-widest text-[#6B2D3C]">
           {step.framework || step.sectionLabel}
         </span>
-        <span className="font-azeret text-[10px] text-[#8C8378]">{index + 1} / {total}</span>
+        {step.num && (
+          <span className="font-azeret text-[10px] text-[#8C8378]">Pregunta {step.num} de 12</span>
+        )}
       </motion.div>
 
       <motion.h2 variants={child} className="font-outfit text-2xl md:text-[34px] leading-tight text-[#2D2926] mb-3">
@@ -67,8 +69,14 @@ export default function QuestionCard({
       </motion.h2>
 
       {step.intro && (
-        <motion.p variants={child} className="text-[14px] text-[#2D2926]/60 mb-6">
+        <motion.p variants={child} className="text-[14px] text-[#2D2926]/60 mb-2">
           {step.intro}
+        </motion.p>
+      )}
+
+      {step.hint && (
+        <motion.p variants={child} className="text-[13px] text-[#8C8378] mb-5">
+          {step.hint}
         </motion.p>
       )}
 
@@ -140,7 +148,7 @@ export default function QuestionCard({
                 : 'bg-[#6B2D3C] text-[#F5F1EB] shadow-[0_4px_15px_rgba(107,45,60,0.3)] hover:shadow-[0_8px_30px_rgba(107,45,60,0.5)] hover:scale-105 hover:-translate-y-1 hover:bg-[#8A3F52]'
             }`}
           >
-            {(value || '').trim() ? 'Al canvas' : 'Saltar'} <ArrowRight size={16} />
+            {isLast ? 'Ver mi Pulso' : (value || '').trim() ? 'Siguiente' : 'Saltar'} <ArrowRight size={16} />
           </motion.button>
         </div>
       </motion.div>
