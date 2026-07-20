@@ -34,12 +34,12 @@ export async function pedirSintesis(answers) {
   }
 }
 
-export async function guardarLead({ nombre, email, answers }) {
+export async function guardarLead({ nombre, email, answers, runId }) {
   try {
     const res = await fetch('/api/pulso-lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, email, answers, ts: new Date().toISOString() }),
+      body: JSON.stringify({ nombre, email, answers, runId, ts: new Date().toISOString() }),
     });
     return res.ok;
   } catch {

@@ -84,7 +84,7 @@ export default function PulsoApp() {
   const enviarLead = async (e) => {
     e.preventDefault();
     setLead((l) => ({ ...l, estado: 'enviando' }));
-    const ok = await guardarLead({ nombre: lead.nombre, email: lead.email, answers });
+    const ok = await guardarLead({ nombre: lead.nombre, email: lead.email, answers, runId: sintesis.data?.runId });
     setLead((l) => ({ ...l, estado: ok ? 'ok' : 'error' }));
   };
 

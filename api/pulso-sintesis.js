@@ -8,6 +8,7 @@
 // Sin clave → 503 y el frontend usa el fallback de plantillas.
 
 import { KB_METODOLOGIA, KB_FRAMEWORKS, KB_HEURISTICAS } from './_kb.js';
+import { sbInsert } from './_supabase.js';
 
 const PALABRAS_PROHIBIDAS = [
   'ecosistema', 'arquitecto de', 'orquestador', 'resonó', 'sin compromiso',
@@ -150,16 +151,39 @@ export default async function handler(req, res) {
       console.error('[pulso-sintesis] pase 2 falló, se usa el borrador:', e.message);
     }
 
-    if (validar(final)) return res.status(200).json(final);
+    if (validar(final)) {
+      // Base de conocimiento: cada corrida se conserva (respuestas + análisis).
+      const saved = await sbInsert('pulso_runs', {
+        nombre: answers.nombre || null,
+        tipo_cliente: answers.tipoCliente || null,
+        momento_negocio: answers.momento || null,
+        momento_diagnostico: final.diagnosticoMomento?.momento || null,
+        answers,
+        analysis: final,
+      });
+      return res.status(200).json({ ...final, runId: saved?.id || null });
+    }
     console.error('[pulso-sintesis] output final no pasó validación');
   } catch (e) {
     console.error('[pulso-sintesis] pase 1 falló:', e.message);
   }
 
-  // Reintento simple del pase 1 antes de rendirse.
+  // Reintento del pase 1 antes de rendirse. Pausa previa por si la falla fue
+  // límite de cuota por minuto (429 en claves gratuitas de Gemini).
+  await new Promise((r) => setTimeout(r, 4000));
   try {
     const data = await llamarModelo(apiKey, PROMPT_GENERACION, respuestasTexto);
-    if (validar(data)) return res.status(200).json(data);
+    if (validar(data)) {
+      const saved = await sbInsert('pulso_runs', {
+        nombre: answers.nombre || null,
+        tipo_cliente: answers.tipoCliente || null,
+        momento_negocio: answers.momento || null,
+        momento_diagnostico: data.diagnosticoMomento?.momento || null,
+        answers,
+        analysis: data,
+      });
+      return res.status(200).json({ ...data, runId: saved?.id || null });
+    }
     console.error('[pulso-sintesis] reintento no pasó validación');
   } catch (e) {
     console.error('[pulso-sintesis] reintento falló:', e.message);
