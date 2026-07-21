@@ -116,11 +116,30 @@ async function gemini(systemPrompt, userText) {
   }
   const body = await res.json();
   const partes = body?.candidates?.[0]?.content?.parts || [];
-  let texto = partes.map((p) => p?.text || '').join('');
+  const texto = partes.map((p) => p?.text || '').join('');
+  return JSON.parse(primerObjetoJson(texto));
+}
+
+// Extrae SOLO el primer objeto JSON balanceado (ignora texto o un segundo
+// objeto que el modelo a veces agrega después). Respeta llaves dentro de
+// strings y escapes.
+function primerObjetoJson(texto) {
   const ini = texto.indexOf('{');
-  const fin = texto.lastIndexOf('}');
-  if (ini !== -1 && fin > ini) texto = texto.slice(ini, fin + 1);
-  return JSON.parse(texto);
+  if (ini === -1) return texto;
+  let profundidad = 0, enString = false, escape = false;
+  for (let i = ini; i < texto.length; i++) {
+    const c = texto[i];
+    if (escape) { escape = false; continue; }
+    if (c === '\\') { escape = true; continue; }
+    if (c === '"') { enString = !enString; continue; }
+    if (enString) continue;
+    if (c === '{') profundidad++;
+    else if (c === '}') {
+      profundidad--;
+      if (profundidad === 0) return texto.slice(ini, i + 1);
+    }
+  }
+  return texto.slice(ini);
 }
 
 export default async function handler(req, res) {
