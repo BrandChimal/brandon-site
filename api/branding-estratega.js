@@ -24,7 +24,8 @@ async function matchCases(queryEmbedding, matchCount = 4) {
         apikey: SB_KEY,
         Authorization: `Bearer ${SB_KEY}`,
       },
-      body: JSON.stringify({ query_embedding: queryEmbedding, match_count: matchCount }),
+      // vector como literal de texto "[...]" (pgvector por REST/RPC).
+      body: JSON.stringify({ query_embedding: `[${queryEmbedding.join(',')}]`, match_count: matchCount }),
     });
     return res.ok ? res.json() : [];
   } catch (e) {

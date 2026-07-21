@@ -1,8 +1,9 @@
 // --- MANTENIMIENTO: BACKFILL DE EMBEDDINGS DE LA BIBLIOTECA DE CASOS ---
 // Genera el embedding de cada fila de brand_cases que aún no lo tenga.
-// Se corre a mano tras sembrar casos nuevos. Protegido con INDEX_SECRET para
-// que no lo dispare cualquiera.
+// Se corre a mano tras sembrar casos nuevos. Protegido con INDEX_SECRET.
 // Uso: GET /api/branding-index?secret=XXXX
+// Robustez: lee TODAS las filas y filtra en JS (evita quirks de is.null sobre
+// vector) y devuelve diagnóstico (total leído) para detectar problemas de clave.
 
 import { embed } from './_embeddings.js';
 
@@ -13,7 +14,11 @@ async function sbGet(path) {
   const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
     headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
   });
-  return res.ok ? res.json() : [];
+  if (!res.ok) {
+    const detalle = await res.text().catch(() => '');
+    return { error: `${res.status}: ${detalle.slice(0, 200)}` };
+  }
+  return { data: await res.json() };
 }
 
 async function sbPatch(id, body) {
@@ -29,8 +34,6 @@ async function sbPatch(id, body) {
   return res.ok;
 }
 
-// Texto que se vectoriza: la tensión del consumidor es la clave de recuperación
-// (regla anti-genérico: se busca por emoción, no por industria).
 function textoParaEmbedding(caso) {
   return [caso.consumidor_tension, caso.justificacion, caso.que_evito]
     .filter(Boolean)
@@ -43,15 +46,30 @@ export default async function handler(req, res) {
   }
   if (!SB_URL || !SB_KEY) return res.status(503).json({ error: 'Supabase no configurado' });
 
-  const pendientes = await sbGet('brand_cases?embedding=is.null&select=id,consumidor_tension,justificacion,que_evito');
+  const got = await sbGet('brand_cases?select=id,consumidor_tension,justificacion,que_evito,embedding');
+  if (got.error) return res.status(502).json({ error: 'Lectura Supabase falló', detalle: got.error });
+
+  const todos = got.data || [];
+  const pendientes = todos.filter((c) => !c.embedding);
+
   let ok = 0;
+  const errores = [];
   for (const caso of pendientes) {
     try {
       const vec = await embed(textoParaEmbedding(caso));
-      if (await sbPatch(caso.id, { embedding: vec })) ok++;
+      // pgvector por REST espera el vector como literal de texto "[v1,v2,...]",
+      // no como arreglo JSON — de lo contrario el PATCH falla silenciosamente.
+      const vecLiteral = `[${vec.join(',')}]`;
+      if (await sbPatch(caso.id, { embedding: vecLiteral })) ok++;
+      else errores.push(`patch ${caso.id} falló`);
     } catch (e) {
-      console.error('[branding-index]', caso.id, e.message);
+      errores.push(`${caso.id}: ${e.message}`);
     }
   }
-  return res.status(200).json({ procesados: pendientes.length, indexados: ok });
+  return res.status(200).json({
+    total_en_tabla: todos.length,
+    pendientes: pendientes.length,
+    indexados: ok,
+    errores,
+  });
 }
