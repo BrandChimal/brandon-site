@@ -1,7 +1,7 @@
 // --- BRIEF VISUAL · Branding Builder ---
-// Complementa al Pulso. Centrado en el CONSUMIDOR, no en el gusto del dueño
-// (eso da genérico). Deriva lo visual del mundo emocional del consumidor.
-// Cada respuesta alimenta al agente Estratega.
+// Complementa al Pulso. Centrado en el CONSUMIDOR, no en el gusto del dueño.
+// Las opciones de emoción se ADAPTAN al papel que la marca ocupa (como los
+// placeholders del Pulso se adaptaban al tipo de cliente).
 
 export const BRIEF_SECTIONS = [
   {
@@ -19,32 +19,35 @@ export const BRIEF_SECTIONS = [
         id: 'queVende',
         type: 'text',
         q: '¿Qué vendes y a quién? En una línea.',
-        hint: 'Ej. "Software de RH para empresas medianas en México".',
+        hint: 'Ej. "Manzanas y frutas con chamoy para jóvenes que buscan antojo".',
+      },
+      {
+        id: 'papelMarca',
+        type: 'select',
+        q: '¿Qué papel debe ocupar tu marca en la vida de tu consumidor?',
+        hint: 'Esto ajusta las siguientes preguntas a tu caso.',
+        options: ['Guía', 'Respaldo', 'Aliado', 'Experto', 'Refugio', 'Impulso'],
       },
     ],
   },
   {
     id: 'percepcion',
     label: 'Percepción',
-    intro: 'Lo que tu consumidor debe sentir — no lo que debe pensar.',
+    intro: 'Lo que tu consumidor debe sentir — elige las que apliquen o agrega la tuya.',
     questions: [
       {
         id: 'percepcionDeseada',
-        type: 'textarea',
-        q: 'Cuando tu consumidor ve tu marca por primera vez, ¿qué debe sentir en un segundo?',
-        hint: 'Una emoción, no una lista de features. Ej. "que por fin encontró a alguien serio que no lo va a estafar".',
+        type: 'chips',
+        q: 'Cuando tu consumidor ve tu marca por primera vez, ¿qué debe sentir?',
+        hint: 'Elige las emociones clave (una o varias). Si falta la tuya, agrégala.',
+        getOptions: (a) => emocionesPositivas(a.papelMarca),
       },
       {
         id: 'dejarDeSentir',
-        type: 'textarea',
+        type: 'chips',
         q: '¿Qué debe dejar de sentir?',
-        hint: 'La emoción negativa que hoy carga y tu marca disuelve. Ej. "miedo a equivocarse", "que lo tratan como número".',
-      },
-      {
-        id: 'papelMarca',
-        type: 'select',
-        q: '¿Qué papel debe ocupar tu marca en su vida?',
-        options: ['Guía', 'Respaldo', 'Aliado', 'Experto', 'Refugio', 'Impulso'],
+        hint: 'La carga emocional que hoy tiene y tu marca disuelve.',
+        getOptions: (a) => emocionesNegativas(a.papelMarca),
       },
     ],
   },
@@ -83,15 +86,21 @@ export const BRIEF_SECTIONS = [
     questions: [
       {
         id: 'tensionCategoria',
-        type: 'textarea',
-        q: '¿Cómo se ve "todo el mundo" en tu industria? Descríbelo.',
-        hint: 'Los colores, símbolos y estilos que todos usan. Justo lo que vamos a evitar.',
+        type: 'chips',
+        q: '¿Cómo se ve "todo el mundo" en tu industria?',
+        hint: 'Los códigos saturados que vamos a evitar. Elige los que reconozcas o agrega el tuyo.',
+        getOptions: () => [
+          'Fotos de producto sobre fondo blanco', 'Colores muy saturados', 'Mucho rojo/amarillo de "oferta"',
+          'Mascotas o personajes caricatura', 'Tipografías redondas infantiles', 'Estilo minimalista frío',
+          'Degradados llamativos', 'Símbolos obvios de la categoría', 'Estética "artesanal" genérica',
+          'Todo se ve igual / intercambiable',
+        ],
       },
       {
         id: 'referenciaAmada',
         type: 'textarea',
-        q: '¿Hay alguna marca (de cualquier industria) cuyo estilo te encante? ¿Por qué?',
-        hint: 'El porqué importa más que la marca. Opcional.',
+        q: '¿Hay alguna marca (de cualquier industria) cuyo estilo te encante?',
+        hint: 'Dime cuál Y por qué te gusta: ¿su color, su tono, cómo te hace sentir, su tipografía, su empaque? El porqué vale más que el nombre. Puede ser de otra industria totalmente distinta. Opcional.',
       },
     ],
   },
@@ -104,7 +113,7 @@ export const BRIEF_SECTIONS = [
         id: 'prohibido',
         type: 'textarea',
         q: '¿Qué colores, estilos o connotaciones NO quieres bajo ninguna circunstancia?',
-        hint: 'Ej. "nada de rosa", "que no parezca infantil", "evitar el rojo por la competencia".',
+        hint: 'Ej. "nada de rosa", "que no parezca infantil", "evitar el verde por la competencia".',
       },
       {
         id: 'obligatorio',
@@ -115,3 +124,39 @@ export const BRIEF_SECTIONS = [
     ],
   },
 ];
+
+// --- Bancos de emoción adaptados al papel de la marca (adaptividad) ---
+const BASE_POS = ['Confianza', 'Claridad', 'Cercanía', 'Alivio', 'Pertenencia', 'Seguridad', 'Entusiasmo', 'Curiosidad', 'Cuidado', 'Antojo'];
+const BASE_NEG = ['Miedo a equivocarse', 'Desconfianza', 'Confusión', 'Frustración', 'Que lo tratan como número', 'Estar solo en la decisión', 'Sentirse abrumado', 'Dudas', 'Aburrimiento', 'Distancia'];
+
+const PRIORIDAD_POS = {
+  Guía: ['Claridad', 'Confianza', 'Seguridad'],
+  Respaldo: ['Seguridad', 'Alivio', 'Cuidado'],
+  Aliado: ['Cercanía', 'Pertenencia', 'Confianza'],
+  Experto: ['Confianza', 'Seguridad', 'Claridad'],
+  Refugio: ['Alivio', 'Cuidado', 'Pertenencia'],
+  Impulso: ['Entusiasmo', 'Antojo', 'Curiosidad'],
+};
+
+const PRIORIDAD_NEG = {
+  Guía: ['Confusión', 'Estar solo en la decisión', 'Dudas'],
+  Respaldo: ['Miedo a equivocarse', 'Sentirse abrumado', 'Estar solo en la decisión'],
+  Aliado: ['Distancia', 'Que lo tratan como número', 'Desconfianza'],
+  Experto: ['Desconfianza', 'Dudas', 'Confusión'],
+  Refugio: ['Sentirse abrumado', 'Miedo a equivocarse', 'Distancia'],
+  Impulso: ['Aburrimiento', 'Distancia', 'Dudas'],
+};
+
+function reordenar(base, prioridad) {
+  if (!prioridad) return base;
+  const front = prioridad.filter((x) => base.includes(x));
+  const rest = base.filter((x) => !front.includes(x));
+  return [...front, ...rest];
+}
+
+function emocionesPositivas(papel) {
+  return reordenar(BASE_POS, PRIORIDAD_POS[papel]);
+}
+function emocionesNegativas(papel) {
+  return reordenar(BASE_NEG, PRIORIDAD_NEG[papel]);
+}

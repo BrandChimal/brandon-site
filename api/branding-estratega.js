@@ -131,12 +131,15 @@ export default async function handler(req, res) {
   if (!pulso && !brief) return res.status(400).json({ error: 'Faltan pulso y brief' });
 
   // 1) La tensión del consumidor es la clave de recuperación del RAG.
+  // Los campos del brief pueden ser texto o arreglo (chips) — se normalizan.
+  const str = (v) => (Array.isArray(v) ? v.join(', ') : (v || ''));
   const tensionConsumidor = [
     pulso?.diagnosticoMomento?.explicacion,
     pulso?.empathyMap?.piensaSiente,
     (pulso?.empathyMap?.pains || []).join('. '),
-    brief?.percepcionDeseada,
-    brief?.tensionCategoria,
+    str(brief?.percepcionDeseada),
+    str(brief?.dejarDeSentir),
+    str(brief?.tensionCategoria),
   ].filter(Boolean).join('\n');
 
   let casos = [];

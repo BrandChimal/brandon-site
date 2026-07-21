@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Sparkles, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, Check, Plus } from 'lucide-react';
 import GlobalStyles from '../styles/GlobalStyles';
 import { EASE, fadeUp, staggerContainer, useReducedMotion } from '../pulso/animations';
 import { BRIEF_SECTIONS } from './brief';
@@ -19,17 +19,84 @@ const BrandingStyles = () => (
       -webkit-backdrop-filter: blur(30px) saturate(140%);
       border: 1.5px solid rgba(255,255,255,0.45);
     }
+    /* Barra neumórfica + glass, más ancha */
+    .brand-slider {
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 14px; border-radius: 9999px; outline: none; cursor: pointer;
+      background: linear-gradient(#EBE6DE, #F5F1EB);
+      box-shadow: inset 3px 3px 7px rgba(140,131,120,0.35), inset -3px -3px 7px rgba(255,255,255,0.9);
+      transition: all .6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .brand-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 30px; height: 30px; border-radius: 9999px;
+      background: linear-gradient(145deg, #7d3648, #6B2D3C);
+      border: 2px solid rgba(255,243,194,0.5);
+      box-shadow: 4px 4px 10px rgba(107,45,60,0.35), -2px -2px 6px rgba(255,255,255,0.6);
+      transition: all .6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .brand-slider::-webkit-slider-thumb:hover { transform: scale(1.12); }
+    .brand-slider::-moz-range-thumb {
+      width: 30px; height: 30px; border-radius: 9999px; border: 2px solid rgba(255,243,194,0.5);
+      background: #6B2D3C; box-shadow: 4px 4px 10px rgba(107,45,60,0.35);
+    }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration:.001ms!important; transition-duration:.001ms!important; }
     }
   `}</style>
 );
 
-const Field = ({ q, value, onChange }) => {
+// Chips multi-selección + "Agregar" para meter una emoción propia.
+const ChipsField = ({ options, value, onChange }) => {
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState('');
+  const selected = Array.isArray(value) ? value : [];
+  const all = [...options, ...selected.filter((s) => !options.includes(s))];
+
+  const toggle = (op) => onChange(selected.includes(op) ? selected.filter((x) => x !== op) : [...selected, op]);
+  const addCustom = () => {
+    const v = draft.trim();
+    if (v && !selected.includes(v)) onChange([...selected, v]);
+    setDraft(''); setAdding(false);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2 items-center">
+      {all.map((op) => (
+        <motion.button key={op} type="button" whileTap={{ scale: 0.95 }} onClick={() => toggle(op)}
+          className={`text-[13px] px-4 py-2 rounded-full border transition-all duration-[600ms] ${
+            selected.includes(op)
+              ? 'bg-[#6B2D3C] text-[#F5F1EB] border-[#6B2D3C] shadow-[0_4px_15px_rgba(107,45,60,0.25)]'
+              : 'glass-warm text-[#2D2926]/75 hover:border-[#6B2D3C]/40 hover:-translate-y-0.5'
+          }`}>
+          {op}
+        </motion.button>
+      ))}
+      {adding ? (
+        <input autoFocus value={draft} onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); } if (e.key === 'Escape') { setAdding(false); setDraft(''); } }}
+          onBlur={addCustom} placeholder="Escribe y Enter"
+          className="text-[13px] px-4 py-2 rounded-full glass-warm text-[#2D2926] focus:outline-none focus:ring-1 focus:ring-[#6B2D3C]/40 w-40" />
+      ) : (
+        <button type="button" onClick={() => setAdding(true)}
+          className="inline-flex items-center gap-1 text-[13px] px-4 py-2 rounded-full border border-dashed border-[#8C8378]/40 text-[#8C8378] hover:border-[#6B2D3C]/50 hover:text-[#6B2D3C] transition-all duration-[600ms]">
+          <Plus size={14} /> Agregar
+        </button>
+      )}
+    </div>
+  );
+};
+
+const Field = ({ q, value, onChange, answers }) => {
+  if (q.type === 'chips') {
+    const options = q.getOptions ? q.getOptions(answers) : (q.options || []);
+    return <ChipsField options={options} value={value} onChange={onChange} />;
+  }
   if (q.type === 'select') {
+    const options = q.getOptions ? q.getOptions(answers) : q.options;
     return (
       <div className="flex flex-wrap gap-2">
-        {q.options.map((op) => (
+        {options.map((op) => (
           <motion.button
             key={op}
             type="button"
@@ -54,9 +121,9 @@ const Field = ({ q, value, onChange }) => {
         <input
           type="range" min="0" max="100" value={v}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full accent-[#6B2D3C]"
+          className="brand-slider"
         />
-        <div className="flex justify-between mt-2 font-azeret text-[10px] uppercase tracking-widest text-[#8C8378]">
+        <div className="flex justify-between mt-3 font-azeret text-[10px] uppercase tracking-widest text-[#8C8378]">
           <span className={v < 45 ? 'text-[#6B2D3C]' : ''}>{q.left}</span>
           <span className={v > 55 ? 'text-[#6B2D3C]' : ''}>{q.right}</span>
         </div>
@@ -221,7 +288,7 @@ export default function BrandingApp() {
                   <motion.div key={q.id} variants={fadeUp}>
                     <label className="block text-[15px] md:text-[16px] font-medium mb-2">{q.q}</label>
                     {q.hint && <p className="text-[13px] text-[#8C8378] mb-3">{q.hint}</p>}
-                    <Field q={q} value={answers[q.id]} onChange={(v) => set(q.id, v)} />
+                    <Field q={q} value={answers[q.id]} onChange={(v) => set(q.id, v)} answers={answers} />
                   </motion.div>
                 ))}
               </div>
