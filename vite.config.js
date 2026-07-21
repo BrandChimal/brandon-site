@@ -20,6 +20,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         pulso: resolve(__dirname, 'pulso.html'),
+        branding: resolve(__dirname, 'branding.html'),
       },
     },
   },

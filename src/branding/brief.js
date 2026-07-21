@@ -5,6 +5,25 @@
 
 export const BRIEF_SECTIONS = [
   {
+    id: 'contexto',
+    label: 'Contexto',
+    intro: 'Lo mínimo para que el análisis hable de tu marca y no de una genérica.',
+    questions: [
+      {
+        id: 'nombre',
+        type: 'text',
+        q: '¿Cómo se llama tu marca? (o el proyecto, si aún no tiene nombre)',
+        hint: 'Si todavía no tienes nombre, déjalo vacío — el naming es un paso aparte.',
+      },
+      {
+        id: 'queVende',
+        type: 'text',
+        q: '¿Qué vendes y a quién? En una línea.',
+        hint: 'Ej. "Software de RH para empresas medianas en México".',
+      },
+    ],
+  },
+  {
     id: 'percepcion',
     label: 'Percepción',
     intro: 'Lo que tu consumidor debe sentir — no lo que debe pensar.',

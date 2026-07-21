@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/pulso", "destination": "/pulso.html" }
+    { "source": "/pulso", "destination": "/pulso.html" },
+    { "source": "/branding", "destination": "/branding.html" }
   ]
 }
